@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 8000;
 const server = http.createServer(app);
 
 async function startServer() {
-	const check = await loadPlanetsData();
+	await loadPlanetsData();
 	server.listen(PORT, () => {
 		console.log(`server is listening on http://localhost:8000`)
 	})
