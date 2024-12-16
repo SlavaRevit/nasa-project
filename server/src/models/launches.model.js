@@ -15,11 +15,9 @@ const launch = {
 
 launches.set(launch.flightNumber, launch);
 
-
 function getAllLaunches() {
 	return Array.from(launches.values());
 }
-
 
 function addNewLaunch(launch) {
 	latestFlightNumber++;
@@ -38,11 +36,22 @@ function abortLaunch(launchId) {
 	aborted.success = false;
 
 	return aborted;
-	// return launches.filter(launch => launch.flightNumber === launchId);
 }
 
+function updateLaunch(launchId, fields) {
+	const launchToUpdate = launches.get(launchId);
+	const newLaunch = Object.assign({},{
+		...launchToUpdate,
+		...fields,
+	})
+
+	launches.set(launchId, newLaunch);
+
+	return newLaunch;
+}
 
 module.exports = {
+	updateLaunch,
 	abortLaunch,
 	addNewLaunch,
 	getAllLaunches,

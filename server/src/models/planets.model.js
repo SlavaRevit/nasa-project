@@ -29,7 +29,7 @@ function loadPlanetsData() {
 				reject(err);
 			})
 			.on('end', () => {
-				console.log(`The habitable planets is: ${habitablePlanets.length}`);
+				// console.log(`The habitable planets is: ${habitablePlanets.length}`);
 				resolve();
 			});
 	}));

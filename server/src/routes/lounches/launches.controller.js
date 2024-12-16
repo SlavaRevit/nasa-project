@@ -1,7 +1,26 @@
-const { getAllLaunches, addNewLaunch, abortLaunch } = require('../../models/launches.model');
+const { getAllLaunches, addNewLaunch, abortLaunch, updateLaunch } = require('../../models/launches.model');
 
 function httpGetAllLaunches(req, res) {
 	return res.status(200).json(getAllLaunches());
+}
+
+function httpUpdateLaunch(req, res) {
+	const launchId = +req.params.id
+	const fields = req.body;
+
+	console.log();
+
+
+	if (Object.values(fields).length === 0) {
+		return res.status(400).json({
+			error: 'nothing to update'
+		})
+	}
+
+	const updatedLaunch = updateLaunch(launchId, fields);
+
+	return res.status(201).json(updatedLaunch);
+
 }
 
 function httpAbortLaunch(req, res) {
@@ -53,6 +72,7 @@ function httpAddNewLaunch(req, res) {
 }
 
 module.exports = {
+	httpUpdateLaunch,
 	httpAbortLaunch,
 	httpGetAllLaunches,
 	httpAddNewLaunch,
