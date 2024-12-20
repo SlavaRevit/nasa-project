@@ -1,21 +1,8 @@
 const launches = require('./launches.mongo');
 const planets = require('./planets.mongo');
-const mongoose = require("mongoose");
 
 const DEFAULT_FLIGHT_NUMBER = 100;
 
-const launch = {
-	flightNumber: 100,
-	mission: 'Kepler Exploration 999999',
-	rocket: 'Explorer IS1',
-	launchDate: new Date('December 27, 2030'),
-	target: 'Kepler-442 b',
-	customers: ['ZTM', 'NASA'],
-	upcoming: true,
-	success: true,
-}
-
-// launches.set(launch.flightNumber, launch);
 async function saveLaunch(launch) {
 	const planet = await planets.findOne({
 		kepler_name: launch.target,
@@ -24,11 +11,20 @@ async function saveLaunch(launch) {
 		throw new Error(`No matching planet found.`);
 	}
 
-	await launches.updateOne({
+	//findOneAndUpdate - will only sett properties set in launch object.
+	await launches.findOneAndUpdate({
 		flightNumber: launch.flightNumber,
 	}, launch, {
 		upsert: true,
 	});
+}
+
+async function existLaunchWithId(launchId) {
+	const exists = await launches.findOne({
+		flightNumber: launchId,
+	})
+
+	return exists;
 }
 
 async function getLatestFlightNumber() {
@@ -53,10 +49,13 @@ async function getLaunchMission(missionName) {
 }
 
 async function getAllLaunches() {
-	return await launches.find({}, {
+	const launchesFromDB = await launches.find({}, {
 		'__v': 0,
 		'_id': 0,
 	});
+
+	console.log(launchesFromDB);
+	return launchesFromDB;
 }
 
 async function scheduleNewLaunch(launch) {
@@ -71,17 +70,21 @@ async function scheduleNewLaunch(launch) {
 	await saveLaunch(newLaunch);
 }
 
-function abortLaunch(launchId) {
-	const aborted = launches.get(launchId);
-	aborted.upcoming = false;
-	aborted.success = false;
+async function abortLaunch(launchId) {
+	const aborted =  await launches.updateOne({
+			flightNumber: launchId
+		},
+		{
+			upcoming: false,
+			success: false,
+		})
 
-	return aborted;
-	// return launches.filter(launch => launch.flightNumber === launchId);
+	return aborted.modifiedCount === 1;
 }
 
 
 module.exports = {
+	existLaunchWithId,
 	getLaunchMission,
 	scheduleNewLaunch,
 	abortLaunch,

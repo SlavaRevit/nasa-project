@@ -10,8 +10,11 @@
   },
   "keywords": [],
   "author": "",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "license": "ISC",
-  "description": "",
+  "description": "Nasa Mission control API",
   "dependencies": {
     "cors": "^2.8.5",
     "csv-parse": "^5.6.0",
@@ -19,7 +22,8 @@
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.2",
     "morgan": "^1.10.0",
-    "pm2": "^5.4.3"
+    "pm2": "^5.4.3",
+    "supertest": "^7.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
