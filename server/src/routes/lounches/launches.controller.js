@@ -1,7 +1,7 @@
-const { getAllLaunches, addNewLaunch, abortLaunch } = require('../../models/launches.model');
+const { getAllLaunches, scheduleNewLaunch, abortLaunch, getLaunchMission } = require('../../models/launches.model');
 
-function httpGetAllLaunches(req, res) {
-	return res.status(200).json(getAllLaunches());
+async function httpGetAllLaunches(req, res) {
+	return res.status(200).json(await getAllLaunches());
 }
 
 function httpAbortLaunch(req, res) {
@@ -18,7 +18,7 @@ function httpAbortLaunch(req, res) {
 	return res.status(200).json(aborted)
 }
 
-function httpAddNewLaunch(req, res) {
+async function httpAddNewLaunch(req, res) {
 	const { mission, rocket, launchDate, target } = req.body;
 	if (!mission || !rocket || !launchDate || !target) {
 		return res.status(400).json({
@@ -33,8 +33,9 @@ function httpAddNewLaunch(req, res) {
 		})
 	}
 
-	const launches = getAllLaunches().find(launch => launch.mission === mission);
-	if (launches) {
+	const launchIsExists = await getLaunchMission(mission);
+
+	if (launchIsExists) {
 		return res.status(400).json({
 			error: 'This mission is already scheduled'
 		})
@@ -47,7 +48,7 @@ function httpAddNewLaunch(req, res) {
 		target,
 	}
 
-	addNewLaunch(launch);
+	await scheduleNewLaunch(launch);
 
 	res.status(201).json(launch);
 }
